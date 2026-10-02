@@ -17,14 +17,14 @@ export class PlayerWeapon extends Component {
     }
 
     public processFiring(isFiring: boolean, currentAngle: number): void { 
-        if (!this.currentWeapon || isFiring) return;
+        if (!this.currentWeapon || !isFiring) return;
 
         if (this.currentWeapon.currentFireMode !== FireMode.SEMI_AUTO) {
             this.currentWeapon.triggerPulled(currentAngle);
         }
     }
 
-    public triggerSingleShot(currentAngle: number): void { 
+    public  triggerSingleShot(currentAngle: number): void { 
         if (!this.currentWeapon) return;
 
         if(this.currentWeapon.currentFireMode === FireMode.SEMI_AUTO) {

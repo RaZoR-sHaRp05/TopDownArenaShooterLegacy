@@ -1,6 +1,6 @@
 import { _decorator, Camera, Component, EventKeyboard, EventMouse, Input, input, Node, Prefab } from 'cc';
 import { Player } from './Player';
-import { PISTOL } from './WeaponConfig';
+import { DOUBLE_GUN, FORWARD_REAR_PISTOL, PISTOL, SPREAD_GUN } from './WeaponConfig';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameCtrl')
@@ -34,6 +34,10 @@ export class GameCtrl extends Component {
         input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
         input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
         input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+
+        if (this.player) {
+            this.player.node.on('WeaponSelect', this.handleWeaponSwap, this);
+        }
     }
 
     protected onDestroy(): void {
@@ -42,6 +46,10 @@ export class GameCtrl extends Component {
         input.off(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
         input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
         input.off(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+
+        if (this.player) {
+            this.player.node.off('WeaponSelect', this.handleWeaponSwap, this);
+        }
     }
 
     update(deltaTime: number) {
@@ -62,6 +70,23 @@ export class GameCtrl extends Component {
     }
     private onMouseUp(event: EventMouse): void { 
         if (this.player) this.player.processMouseUp(event);
+    }
+
+    private handleWeaponSwap(weaponIndex: number) {
+        switch (weaponIndex) {
+            case 1:
+                this.player.initializeWeapon(PISTOL, this.bulletPrefab, this.bulletContainer);
+                break;
+            case 2:
+                this.player.initializeWeapon(DOUBLE_GUN, this.bulletPrefab, this.bulletContainer);
+                break;
+            case 3:
+                this.player.initializeWeapon(FORWARD_REAR_PISTOL, this.bulletPrefab, this.bulletContainer);
+                break;
+            case 4:
+                this.player.initializeWeapon(SPREAD_GUN, this.bulletPrefab, this.bulletContainer);
+                break;
+        }
     }
 }
 
