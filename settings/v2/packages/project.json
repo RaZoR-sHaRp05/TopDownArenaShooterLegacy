@@ -1,0 +1,46 @@
+{
+  "__version__": "1.0.4",
+  "physics": {
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "PLAYER"
+      },
+      {
+        "index": 2,
+        "name": "ENEMY"
+      },
+      {
+        "index": 3,
+        "name": "PLAYERBULLETS"
+      },
+      {
+        "index": 4,
+        "name": "ENEMYBULLETS"
+      },
+      {
+        "index": 5,
+        "name": "OBSTACLES"
+      },
+      {
+        "index": 6,
+        "name": "BORDERS"
+      }
+    ],
+    "collisionMatrix": {
+      "0": 1,
+      "1": 116,
+      "2": 2,
+      "3": 96,
+      "4": 2,
+      "5": 10,
+      "6": 10
+    }
+  },
+  "general": {
+    "designResolution": {
+      "width": 1280,
+      "height": 720
+    }
+  }
+}
