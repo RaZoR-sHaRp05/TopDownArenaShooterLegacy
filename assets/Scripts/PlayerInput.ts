@@ -1,17 +1,42 @@
-import { _decorator, Camera, Component, EventKeyboard, EventMouse, KeyCode, log, Node, Vec2, Vec3, math } from 'cc';
+import { _decorator, Camera, Component, EventKeyboard, EventMouse, KeyCode, log, Node, Vec2, Vec3, math, error, Input, input } from 'cc';
+import { IInputSystem } from './IInputSystem';
 const { ccclass, property } = _decorator;
 
+
 @ccclass('PlayerInput')
-export class PlayerInput extends Component {
+export class PlayerInput extends Component implements IInputSystem {
    
     public isShooting: boolean = false;
+    private singleShotQueued: boolean = false;
 
     private isUp: boolean = false;
     private isDown: boolean = false;
     private isLeft: boolean = false;
     private isRight: boolean = false;
 
+    private camera: Camera | null = null;
+    private targetAngle: number = 0;
     private moveDir: Vec2 = new Vec2;
+
+    protected onLoad(): void {
+        input.on(Input.EventType.KEY_DOWN, this.handleKeyDown, this);
+        input.on(Input.EventType.KEY_UP, this.handleKeyUp, this);
+        input.on(Input.EventType.MOUSE_DOWN, this.handleMouseDown, this);
+        input.on(Input.EventType.MOUSE_UP, this.handleMouseUp, this);
+        input.on(Input.EventType.MOUSE_MOVE, this.handleMouseMove, this);
+    }
+
+    public initialize(camera: Camera) {
+        this.camera = camera;
+    }
+
+    protected onDestroy(): void {
+        input.off(Input.EventType.KEY_DOWN, this.handleKeyDown, this);
+        input.off(Input.EventType.KEY_UP, this.handleKeyUp, this);
+        input.off(Input.EventType.MOUSE_DOWN, this.handleMouseDown, this);
+        input.off(Input.EventType.MOUSE_UP, this.handleMouseUp, this);
+        input.off(Input.EventType.MOUSE_MOVE, this.handleMouseMove, this);
+    }
 
     public handleKeyDown(event: EventKeyboard): void { 
         switch (event.keyCode) {
@@ -48,6 +73,8 @@ export class PlayerInput extends Component {
                 this.node.emit('WeaponSelect', 4);
                 break;
         }
+
+        this.calculateMoveDirection();
     }
     public handleKeyUp(event: EventKeyboard): void { 
         switch (event.keyCode) {
@@ -68,13 +95,15 @@ export class PlayerInput extends Component {
                 this.isRight = false;
                 break;
         }
+        this.calculateMoveDirection();
     }
-    public handleMouseMove(event: EventMouse, camera: Camera, playerPos: Readonly<Vec3>): number { 
-        return this.calculateRotationAngle(event, camera, playerPos)
+    public handleMouseMove(event: EventMouse) { 
+        this.calculateRotationAngle(event);
     }
     public handleMouseDown(event: EventMouse): void { 
         if (event.getButton() === 0) {
             this.isShooting = true;
+            this.singleShotQueued = true;
             log("Input: Trigger pulled");
         }
     }
@@ -86,20 +115,38 @@ export class PlayerInput extends Component {
     }
 
     public getMoveDirection(): Vec2 {
-        this.moveDir.x = (this.isRight ? 1 : 0) - (this.isLeft ? 1 : 0);
-        this.moveDir.y = (this.isUp ? 1 : 0) - (this.isDown ? 1 : 0);
-        this.moveDir.normalize();
         return this.moveDir;
     }
 
-    public calculateRotationAngle(event: EventMouse, camera: Camera, playerPos: Readonly<Vec3>): number {
+    private calculateMoveDirection() {
+        this.moveDir.x = (this.isRight ? 1 : 0) - (this.isLeft ? 1 : 0);
+        this.moveDir.y = (this.isUp ? 1 : 0) - (this.isDown ? 1 : 0);
+        this.moveDir.normalize();
+    }
+
+    public calculateRotationAngle(event: EventMouse) {
+        if (!this.camera) return;
+
         let mouseScreenPos = event.getLocation();
         let mouseWorldPos = new Vec3;
-        camera.screenToWorld(new Vec3(mouseScreenPos.x, mouseScreenPos.y, 0), mouseWorldPos);
+        this.camera.screenToWorld(new Vec3(mouseScreenPos.x, mouseScreenPos.y, 0), mouseWorldPos);
+        let currentPos = this.node.worldPosition;
+        let dx = mouseWorldPos.x - currentPos.x;
+        let dy = mouseWorldPos.y - currentPos.y;
 
-        let dx = mouseWorldPos.x - playerPos.x;
-        let dy = mouseWorldPos.y - playerPos.y;
-        return math.toDegree(Math.atan2(dy, dx));
+        this.targetAngle = math.toDegree(Math.atan2(dy, dx));
+    }
+
+    public getRotationAngle(): number {
+        return this.targetAngle;
+    }
+
+    public getSingleShotIntent(): boolean {
+        if (this.singleShotQueued) {
+            this.singleShotQueued = false
+            return true;
+        }
+        return false;
     }
 }
 

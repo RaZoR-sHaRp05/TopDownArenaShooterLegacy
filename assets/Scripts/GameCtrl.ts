@@ -29,23 +29,12 @@ export class GameCtrl extends Component {
             this.player.initializeWeapon(PISTOL, this.bulletPrefab, this.bulletContainer);
         }
 
-        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-        input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
-        input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
-        input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
-
         if (this.player) {
             this.player.node.on('WeaponSelect', this.handleWeaponSwap, this);
         }
     }
 
     protected onDestroy(): void {
-        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
-        input.off(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
-        input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
-        input.off(Input.EventType.MOUSE_UP, this.onMouseUp, this);
 
         if (this.player) {
             this.player.node.off('WeaponSelect', this.handleWeaponSwap, this);
@@ -56,22 +45,6 @@ export class GameCtrl extends Component {
         
     }
     
-    private onKeyDown(event: EventKeyboard): void { 
-        if (this.player) this.player.processKeyDown(event);
-    }
-    private onKeyUp(event: EventKeyboard): void { 
-        if (this.player) this.player.processKeyUp(event);
-    }
-    private onMouseMove(event: EventMouse): void { 
-        if (this.player) this.player.processMouseMove(event);
-    }
-    private onMouseDown(event: EventMouse): void { 
-        if (this.player) this.player.processMouseDown(event);
-    }
-    private onMouseUp(event: EventMouse): void { 
-        if (this.player) this.player.processMouseUp(event);
-    }
-
     private handleWeaponSwap(weaponIndex: number) {
         switch (weaponIndex) {
             case 1:

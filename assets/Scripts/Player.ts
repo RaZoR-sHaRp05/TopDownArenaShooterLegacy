@@ -31,7 +31,9 @@ export class Player extends Component {
     }
 
     start() {
-
+        if (this.inputSystem) {
+            this.inputSystem.initialize(this.mainCamera);
+        }
     }
 
 
@@ -39,33 +41,17 @@ export class Player extends Component {
         if (this.inputSystem && this.movementSystem) {
             let moveDir = this.inputSystem.getMoveDirection()
             this.movementSystem.updateMovement(moveDir);
+            let targetAngle = this.inputSystem.getRotationAngle();
+            this.movementSystem.updateRotation(targetAngle);
         }
 
         if (this.inputSystem && this.weaponSystem) {
             let isFiring = this.inputSystem.isShooting;
             this.weaponSystem.processFiring(isFiring, this.node.angle)
+            if (this.inputSystem.getSingleShotIntent()) {
+                this.weaponSystem.triggerSingleShot(this.node.angle)
+            }
         }
-    }
-
-
-    public processKeyDown(event: EventKeyboard): void { 
-        if (this.inputSystem) this.inputSystem.handleKeyDown(event);
-    }
-    public processKeyUp(event: EventKeyboard): void { 
-        if (this.inputSystem) this.inputSystem.handleKeyUp(event);
-    }
-    public processMouseMove(event: EventMouse): void { 
-        if (this.inputSystem && this.movementSystem && this.mainCamera) {
-            let targetAngle = this.inputSystem.handleMouseMove(event, this.mainCamera, this.node.getWorldPosition());
-            this.movementSystem.updateRotation(targetAngle);
-        }
-    }
-    public processMouseDown(event: EventMouse): void { 
-        if (this.inputSystem) this.inputSystem.handleMouseDown(event);
-        if (this.weaponSystem) this.weaponSystem.triggerSingleShot(this.node.angle);
-    }
-    public processMouseUp(event: EventMouse): void { 
-        if (this.inputSystem) this.inputSystem.handleMouseUp(event);
     }
 }
 
