@@ -15,6 +15,11 @@ export class ArrivedState implements IState {
         this.timer -= dt;
         let myPos = new Vec2(brain.node.worldPosition.x, brain.node.worldPosition.y);
 
+        if (brain.getDistanceToPlayer(myPos) < brain.spotPlayerDistance) {
+            brain.changeState(brain.chaseState)
+            return;
+        }
+
         if (this.timer <= 0) {
             //brain.wander.pickNewWanderPoint();
             brain.changeState(brain.patrolState);
