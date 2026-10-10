@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, RigidBody2D, math, Vec2 } from 'cc';
+import { _decorator, Component, Node, RigidBody2D, math, Vec2, log } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('EnemyMovement')
@@ -56,6 +56,11 @@ export class EnemyMovement extends Component {
         }
 
         return force;
+    }
+
+    public isMovingSlowly(): boolean {
+        if (!this.rigidBody) return true;
+        return this.rigidBody.linearVelocity.lengthSqr() < 10;
     }
 }
 
