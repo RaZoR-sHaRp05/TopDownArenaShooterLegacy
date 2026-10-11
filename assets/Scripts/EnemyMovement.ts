@@ -1,12 +1,17 @@
-import { _decorator, Component, Node, RigidBody2D, math, Vec2, log } from 'cc';
+import { _decorator, Component, Node, RigidBody2D, math, Vec2, log, Graphics } from 'cc';
 import { MovementConfig } from './EnemyConfig';
+import { TacticalSteeringBehavior } from './TacticalSteeringBehavior';
 const { ccclass, property } = _decorator;
 
 @ccclass('EnemyMovement')
 export class EnemyMovement extends Component {
+
+    @property({ type: Graphics })
+    public debugGraphics: Graphics | null = null;
    
     private maxSpeed: number | null = null;
     private maxTurnForce: number | null = null;
+    private tacticalSteering: TacticalSteeringBehavior;
     private rigidBody: RigidBody2D | null = null;
 
     protected onLoad(): void {
@@ -16,6 +21,7 @@ export class EnemyMovement extends Component {
     public init(movementConfig: MovementConfig) {
         this.maxSpeed = movementConfig.maxSpeed;
         this.maxTurnForce = movementConfig.maxTurnForce;
+        this.tacticalSteering = new TacticalSteeringBehavior(movementConfig, this)
     }
 
     public updateRotation(angleDegrees: number | null) {
@@ -39,8 +45,19 @@ export class EnemyMovement extends Component {
 
         let currentVelocity = this.getVelocity();
 
+        let currentPosition = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
+
+        let tacticalAdjustments = this.tacticalSteering.getDesiredVelocity(currentPosition);
+
+        let combinedForces = new Vec2;
+        Vec2.add(combinedForces, tacticalAdjustments, moveDir)
+
+        if (combinedForces.lengthSqr() > 1.0) {
+            combinedForces.normalize;
+        }
+
         let desiredVelocity = new Vec2;
-        Vec2.multiplyScalar(desiredVelocity, moveDir, this.maxSpeed);
+        Vec2.multiplyScalar(desiredVelocity, combinedForces, this.maxSpeed);
 
         let steeringForce = new Vec2;
         Vec2.subtract(steeringForce, desiredVelocity, currentVelocity);
