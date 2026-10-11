@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, RigidBody2D, math, Vec2, log } from 'cc';
+import { MovementConfig } from './EnemyConfig';
 const { ccclass, property } = _decorator;
 
 @ccclass('EnemyMovement')
@@ -10,8 +11,11 @@ export class EnemyMovement extends Component {
 
     protected onLoad(): void {
         this.rigidBody = this.getComponent(RigidBody2D);
-        this.maxSpeed = 4;
-        this.maxTurnForce = 0.2;
+    }
+
+    public init(movementConfig: MovementConfig) {
+        this.maxSpeed = movementConfig.maxSpeed;
+        this.maxTurnForce = movementConfig.maxTurnForce;
     }
 
     public updateRotation(angleDegrees: number | null) {
