@@ -8,6 +8,8 @@ const { ccclass, property } = _decorator;
 @ccclass('Enemy')
 export class Enemy extends Component {
 
+    public static activeEnemies: Enemy[] = [];
+
     @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1]})
     public seekWeight: number = 1.0;
 
@@ -26,6 +28,9 @@ export class Enemy extends Component {
     @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1]})
     public seperationWeight: number = 0;
 
+    @property({ group: 'Movement Weights', slide: true, range: [0, 150, 5]})
+    public separationRadius: number = 50;
+
     @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1]})
     public alignmentWeight: number = 0;
 
@@ -41,6 +46,7 @@ export class Enemy extends Component {
     private targetNode: Node | null = null;
 
     protected onLoad(): void {
+        Enemy.activeEnemies.push(this);
         this.inputSystem = this.getComponent(EnemyInput);
         this.movementSystem = this.getComponent(EnemyMovement);
         this.healthSystem = this.getComponent(HealthSystem);
@@ -60,6 +66,7 @@ export class Enemy extends Component {
             avoidWeight: this.avoidWeight,
             flocking: {
                 seperationWeight: this.seperationWeight,
+                seperationRadius: this.separationRadius,
                 alignmentWeight: this.alignmentWeight,
                 cohesionWeight: this.cohesionWeight
             },
@@ -112,6 +119,13 @@ export class Enemy extends Component {
 
         if (this.inputSystem.stateDebugLabel) {
             this.inputSystem.stateDebugLabel.node.angle = -this.node.angle;
+        }
+    }
+
+    protected onDestroy(): void {
+        let index = Enemy.activeEnemies.indexOf(this);
+        if (index > -1) {
+            Enemy.activeEnemies.splice(index, 1);
         }
     }
 }

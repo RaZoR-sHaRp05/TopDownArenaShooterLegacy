@@ -3,17 +3,20 @@ import { ISteeringBehavior } from "./ISteeringBehavior";
 import { MovementConfig } from "./EnemyConfig";
 import { EnemyMovement } from "./EnemyMovement";
 import { AvoidBehavior } from "./AvoidBehavior";
+import { SeparationBehavior } from "./SeparationBehavior";
 
 export class TacticalSteeringBehavior implements ISteeringBehavior {
     private movementConfig: MovementConfig;
     private currentHitNormals: Vec2[] = [];
     private brain: EnemyMovement;
     private avoidBehavior: AvoidBehavior;
+    private separationBehavior: SeparationBehavior;
 
     constructor(movementConfig: MovementConfig, enemyMovement: EnemyMovement) {
         this.movementConfig = movementConfig;
         this.brain = enemyMovement
-        this.avoidBehavior = new AvoidBehavior(enemyMovement, movementConfig.whiskers)
+        this.avoidBehavior = new AvoidBehavior(enemyMovement, movementConfig.whiskers);
+        this.separationBehavior = new SeparationBehavior(enemyMovement, movementConfig.flocking.seperationRadius);
     }
 
 
@@ -28,7 +31,9 @@ export class TacticalSteeringBehavior implements ISteeringBehavior {
        }
 
        if (this.movementConfig.flocking.seperationWeight > 0) {
-
+            let separationForce = this.separationBehavior.getDesiredVelocity(currentPosition)
+            separationForce.multiplyScalar(this.movementConfig.flocking.seperationWeight);
+            totalTacticalForce.add(separationForce);
        }
 
        if (this.movementConfig.flocking.alignmentWeight > 0) {
