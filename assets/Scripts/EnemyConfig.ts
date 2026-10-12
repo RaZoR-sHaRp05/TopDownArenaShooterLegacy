@@ -15,7 +15,9 @@ export interface FlockingWeights {
     seperationWeight: number,
     seperationRadius: number,
     alignmentWeight: number,
-    cohesionWeight: number
+    alignmentRadius: number,
+    cohesionWeight: number,
+    cohesionRadius: number
 }
 
 export interface MovementConfig {
