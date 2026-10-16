@@ -2,55 +2,13 @@ import { _decorator, Component, Node, find, Vec2 } from 'cc';
 import { EnemyInput } from './EnemyInput';
 import { EnemyMovement } from './EnemyMovement';
 import { HealthSystem } from './HealthSystem';
-import { IntentConfig, MovementConfig } from './EnemyConfig';
+import { EnemyConfig, IntentConfig, MovementConfig } from './EnemyConfig';
 const { ccclass, property } = _decorator;
 
 @ccclass('Enemy')
 export class Enemy extends Component {
 
     public static activeEnemies: Enemy[] = [];
-
-    @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1]})
-    public seekWeight: number = 1.0;
-
-    @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1]})
-    public fleeWeight: number = 0.0;
-
-    @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1]})
-    public maxPredictionTime: number = 2.0;
-
-    @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1]})
-    public maxSpeed: number = 4;
-
-    @property({ group: 'Intent Weights', slide: true, range: [0, 500, 10]})
-    public spotPlayerDistance: number = 200;
-
-    @property({ group: 'Intent Weights', slide: true, range: [0, 500, 10]})
-    public lostPlayerDistance: number = 250;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 1, 0.1]})
-    public maxTurnForce: number = 0.2;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 10, 0.1]})
-    public avoidWeight: number = 3;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1]})
-    public seperationWeight: number = 0;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 150, 5]})
-    public separationRadius: number = 50;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1]})
-    public alignmentWeight: number = 0;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 200, 5]})
-    public alignmentRadius: number = 100;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1]})
-    public cohesionWeight: number = 0;
-
-    @property({ group: 'Movement Weights', slide: true, range: [0, 400, 5]})
-    public cohesionRadius: number = 245;
 
     private inputSystem: EnemyInput | null = null;
     private movementSystem: EnemyMovement | null = null;
@@ -62,58 +20,42 @@ export class Enemy extends Component {
 
     protected onLoad(): void {
         Enemy.activeEnemies.push(this);
-        this.inputSystem = this.getComponent(EnemyInput);
-        this.movementSystem = this.getComponent(EnemyMovement);
-        this.healthSystem = this.getComponent(HealthSystem);
+    }
+
+    public init(enemyConfig: EnemyConfig){
+        if (!this.inputSystem) {
+            this.inputSystem = this.getComponent(EnemyInput);
+        }
+        if (!this.movementSystem) {
+            this.movementSystem = this.getComponent(EnemyMovement);
+        }
+        if (!this.healthSystem) {
+            this.healthSystem = this.getComponent(HealthSystem);
+        }
+
+        this.node.setScale(enemyConfig.scale.x, enemyConfig.scale.y);
 
         if (this.healthSystem) {
             this.healthSystem.initialize(20);
         }
 
-        this.intentConfig = {
-            seekWeight: this.seekWeight,
-            fleeWeight: this.fleeWeight,
-            maxSpeed: this.maxSpeed,
-            maxPredictionTime: this.maxPredictionTime,
-            spotPlayerDistance: this.spotPlayerDistance,
-            lostPlayerDistance: this.lostPlayerDistance
-        }
-
-        this.movementConfig = {
-            maxTurnForce: this.maxTurnForce,
-            avoidWeight: this.avoidWeight,
-            flocking: {
-                seperationWeight: this.seperationWeight,
-                seperationRadius: this.separationRadius,
-                alignmentWeight: this.alignmentWeight,
-                alignmentRadius: this.alignmentRadius,
-                cohesionWeight: this.cohesionWeight,
-                cohesionRadius: this.cohesionRadius
-            },
-            whiskers: [
-                { startPos: new Vec2, angle: 0, length: 100 },
-                { startPos: new Vec2, angle: 25, length: 75 },
-                { startPos: new Vec2, angle: -25, length: 75 },
-                { startPos: new Vec2, angle: 45, length: 50 },
-                { startPos: new Vec2, angle: -45, length: 50 },
-            ]
-        }
-    }
-    
-    start() {
         if (this.inputSystem) {
             this.targetNode = find("Canvas/Player");
             let wanderPoints = this.node.getParent().getChildByName("WanderNodes").children.map(
                 child => new Vec2(child.worldPosition.x, child.worldPosition.y)
             );
-            this.inputSystem.initialize(this.targetNode, wanderPoints, this.intentConfig);
+            this.inputSystem.initialize(this.targetNode, wanderPoints, enemyConfig.intent);
         }
 
         if (this.movementSystem) {
-            this.movementSystem.init(this.intentConfig.maxSpeed, this.movementConfig);
+            this.movementSystem.init(enemyConfig.intent.maxSpeed, enemyConfig.moving)
         }
 
+        if (this.healthSystem) {
+            this.healthSystem.initialize(enemyConfig.health);
+        }
     }
+    
 
     update(deltaTime: number) {
         if (this.healthSystem) {

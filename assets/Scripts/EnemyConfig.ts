@@ -16,8 +16,8 @@ export interface WhiskerConfig {
 }
 
 export interface FlockingWeights {
-    seperationWeight: number,
-    seperationRadius: number,
+    separationWeight: number,
+    separationRadius: number,
     alignmentWeight: number,
     alignmentRadius: number,
     cohesionWeight: number,
@@ -32,6 +32,8 @@ export interface MovementConfig {
 }
 
 export interface EnemyConfig {
-    intent: IntentConfig;
+    scale: Vec2,
+    health: number,
+    intent: IntentConfig,
     moving: MovementConfig
 }
