@@ -1,0 +1,69 @@
+{
+    "scale": {
+        "x": 0.8,
+        "y": 0.8
+    },
+    "health": 20,
+    "intent": {
+        "seekWeight": 1,
+        "fleeWeight": 0,
+        "maxSpeed": 4,
+        "maxPredictionTime": 0,
+        "spotPlayerDistance": 360,
+        "lostPlayerDistance": 450
+    },
+    "moving": {
+        "maxTurnForce": 0.2,
+        "avoidWeight": 3,
+        "flocking": {
+            "separationWeight": 3,
+            "separationRadius": 50,
+            "alignmentWeight": 0,
+            "alignmentRadius": 100,
+            "cohesionWeight": 0,
+            "cohesionRadius": 245
+        },
+        "whiskers": [
+            {
+                "startPos": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": 8,
+                "length": 100
+            },
+            {
+                "startPos": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": 25,
+                "length": 75
+            },
+            {
+                "startPos": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": -25,
+                "length": 75
+            },
+            {
+                "startPos": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": 45,
+                "length": 50
+            },
+            {
+                "startPos": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": -45,
+                "length": 50
+            }
+        ]
+    }
+}

@@ -255,7 +255,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 11
@@ -388,7 +388,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 17
@@ -614,17 +614,10 @@
     "__prefab": {
       "__id__": 29
     },
-    "seekWeight": 1,
-    "fleeWeight": 0,
-    "maxSpeed": 4,
-    "maxTurnForce": 0.2,
-    "avoidWeight": 3,
-    "seperationWeight": 2.5,
-    "separationRadius": 100,
-    "alignmentWeight": 3,
-    "alignmentRadius": 100,
-    "cohesionWeight": 2,
-    "cohesionRadius": 245,
+    "testConfigFile": {
+      "__uuid__": "59117263-6611-42d6-9e62-9113e42eeea4",
+      "__expectedType__": "cc.JsonAsset"
+    },
     "_id": ""
   },
   {

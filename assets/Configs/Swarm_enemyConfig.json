@@ -7,9 +7,9 @@
     "intent": {
         "seekWeight": 1,
         "fleeWeight": 0,
-        "maxSpeed": 2,
+        "maxSpeed": 3,
         "maxPredictionTime": 2,
-        "spotPlayerDistance": 200,
+        "spotPlayerDistance": 150,
         "lostPlayerDistance": 250
     },
     "moving": {
@@ -17,10 +17,10 @@
         "avoidWeight": 3,
         "flocking": {
             "separationWeight": 0,
-            "separationRadius": 30,
+            "separationRadius": 50,
             "alignmentWeight": 0,
-            "alignmentRadius": 130,
-            "cohesionWeight": 1,
+            "alignmentRadius": 100,
+            "cohesionWeight": 2,
             "cohesionRadius": 245
         },
         "whiskers": [

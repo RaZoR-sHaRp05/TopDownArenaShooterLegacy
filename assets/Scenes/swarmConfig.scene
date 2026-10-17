@@ -117,19 +117,19 @@
     "__prefab": null,
     "scale": {
       "__type__": "cc.Vec2",
-      "x": 1,
-      "y": 1
+      "x": 2.5,
+      "y": 2.5
     },
-    "health": 20,
+    "health": 100,
     "seekWeight": 1,
     "fleeWeight": 0,
-    "maxPredictionTime": 2,
-    "maxSpeed": 4,
-    "spotPlayerDistance": 200,
-    "lostPlayerDistance": 250,
+    "maxPredictionTime": 0,
+    "maxSpeed": 2,
+    "spotPlayerDistance": 450,
+    "lostPlayerDistance": 500,
     "maxTurnForce": 0.2,
     "avoidWeight": 3,
-    "separationWeight": 0,
+    "separationWeight": 3,
     "separationRadius": 50,
     "alignmentWeight": 0,
     "alignmentRadius": 100,
@@ -152,7 +152,7 @@
         "__id__": 8
       }
     ],
-    "configNamePrefix": "Swarm",
+    "configNamePrefix": "Boss",
     "_id": "95QT2M6LJPKYVIWkEmiXwF"
   },
   {
@@ -511,7 +511,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 13
     },
