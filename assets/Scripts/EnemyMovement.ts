@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, RigidBody2D, math, Vec2, log, Graphics } from 'cc';
+import { _decorator, Component, Node, RigidBody2D, math, Vec2, log, Graphics, isValid } from 'cc';
 import { MovementConfig } from './EnemyConfig';
 import { TacticalSteeringBehavior } from './TacticalSteeringBehavior';
 import { Enemy } from './Enemy';
+import { EventBus, GameEvents } from './EventBus';
 const { ccclass, property } = _decorator;
 
 export interface NeighborData {
@@ -19,9 +20,11 @@ export class EnemyMovement extends Component {
     private maxTurnForce: number | null = null;
     private tacticalSteering: TacticalSteeringBehavior;
     private rigidBody: RigidBody2D | null = null;
+    private sharedActiveEnemies: Enemy[] = [];
 
     protected onLoad(): void {
         this.rigidBody = this.getComponent(RigidBody2D);
+        EventBus.on(GameEvents.WAVE_SPAWNED, this.receiveEnemyArray, this);
     }
 
     public init(maxSpeed: number, movementConfig: MovementConfig) {
@@ -90,24 +93,36 @@ export class EnemyMovement extends Component {
         return this.rigidBody.linearVelocity.lengthSqr() < 10;
     }
 
+    private receiveEnemyArray(masterArray: Enemy[]){
+        this.sharedActiveEnemies = masterArray;
+    }
+
     public getNeighborData(): NeighborData[] {
-       let neighbors: NeighborData[] = [];
-       for (let otherEnemy of Enemy.activeEnemies) {
-        if (otherEnemy.node === this.node) continue;
+        let neighbors: NeighborData[] = [];
 
-        let otherMovement = otherEnemy.getComponent(EnemyMovement);
-        if (!otherMovement) continue;
+        if (!this.sharedActiveEnemies || this.sharedActiveEnemies.length === 0) return neighbors;
 
-        neighbors.push({
-            position: new Vec2(
-                otherEnemy.node.worldPosition.x,
-                otherEnemy.node.worldPosition.y
-            ), 
-            velocity: otherMovement.getVelocity()
-        })
-       }
+        for (let otherEnemy of this.sharedActiveEnemies) {
+        
+            if (!isValid(otherEnemy) || !otherEnemy.node || otherEnemy.node === this.node) continue;
+
+            let otherMovement = otherEnemy.getComponent(EnemyMovement);
+            if (!otherMovement) continue;
+
+            neighbors.push({
+                position: new Vec2(
+                    otherEnemy.node.worldPosition.x,
+                    otherEnemy.node.worldPosition.y
+                ), 
+                velocity: otherMovement.getVelocity()
+            })
+        }
 
        return neighbors
+    }
+
+    protected onDestroy(): void {
+        EventBus.off(GameEvents.WAVE_SPAWNED, this.receiveEnemyArray, this);
     }
 }
 
